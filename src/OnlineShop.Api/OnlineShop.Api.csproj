@@ -15,10 +15,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Controllers\" />
-  </ItemGroup>
-
-  <ItemGroup>
+    <ProjectReference Include="..\OnlineShop.BLL\OnlineShop.BLL.csproj" />
     <ProjectReference Include="..\OnlineShop.DataLayer\OnlineShop.DataLayer.csproj" />
   </ItemGroup>
 

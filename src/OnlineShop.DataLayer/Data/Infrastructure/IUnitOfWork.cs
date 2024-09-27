@@ -7,7 +7,6 @@ public interface IUnitOfWork
 {
     IItemRepository ItemRepository { get; }
     ICategoryRepository CategoryRepository { get; }
-    IItemCategoryRepository ItemCategoryRepository { get; }
     IItemImageRepository ItemImageRepository { get; }
 
     Task SaveChangesAsync();

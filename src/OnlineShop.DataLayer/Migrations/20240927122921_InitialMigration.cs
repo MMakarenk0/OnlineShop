@@ -48,22 +48,21 @@ namespace OnlineShop.DataLayer.Migrations
                 name: "ItemCategories",
                 columns: table => new
                 {
-                    ItemId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    CategoryId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                    CategoriesId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    ItemsId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ItemCategories", x => new { x.ItemId, x.CategoryId });
+                    table.PrimaryKey("PK_ItemCategories", x => new { x.CategoriesId, x.ItemsId });
                     table.ForeignKey(
-                        name: "FK_ItemCategories_Categories_CategoryId",
-                        column: x => x.CategoryId,
+                        name: "FK_ItemCategories_Categories_CategoriesId",
+                        column: x => x.CategoriesId,
                         principalTable: "Categories",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_ItemCategories_Items_ItemId",
-                        column: x => x.ItemId,
+                        name: "FK_ItemCategories_Items_ItemsId",
+                        column: x => x.ItemsId,
                         principalTable: "Items",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -74,8 +73,7 @@ namespace OnlineShop.DataLayer.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    ImageUrl = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    AltText = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    FileName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     ItemId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },
                 constraints: table =>
@@ -95,9 +93,9 @@ namespace OnlineShop.DataLayer.Migrations
                 column: "ParentId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ItemCategories_CategoryId",
+                name: "IX_ItemCategories_ItemsId",
                 table: "ItemCategories",
-                column: "CategoryId");
+                column: "ItemsId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_ItemImage_ItemId",

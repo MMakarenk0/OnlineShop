@@ -30,10 +30,25 @@ public class Repository<TEntity> : IRepository<TEntity> where TEntity : IEntity
         }
     }
 
+    // Method for searching by primary key using FindAsync
     public async Task<TEntity> Find(Guid id)
     {
         return await _dbContext.Set<TEntity>().FindAsync(id);
     }
+
+    // Overload for search with the ability to include related data
+    public async Task<TEntity> Find(Guid id, Func<IQueryable<TEntity>, IQueryable<TEntity>>? include)
+    {
+        IQueryable<TEntity> query = _dbContext.Set<TEntity>();
+
+        if (include != null)
+        {
+            query = include(query);
+        }
+
+        return await query.SingleOrDefaultAsync(i => i.Id == id);
+    }
+
 
     public IQueryable<TEntity> GetAll()
     {

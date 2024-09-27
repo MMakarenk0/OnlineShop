@@ -2,8 +2,7 @@
 
 public class ItemImage : IEntity
 {
-    public string ImageUrl { get; set; }
-    public string AltText { get; set; }
+    public string FileName { get; set; } // File name for generating SAS-links
     public Guid ItemId { get; set; }
     public Item Item { get; set; }
 }

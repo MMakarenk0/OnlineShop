@@ -25,7 +25,6 @@ public static class DataLayerDI
         services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
         services.AddScoped<IItemRepository, ItemRepository>();
         services.AddScoped<ICategoryRepository, CategoryRepository>();
-        services.AddScoped<IItemCategoryRepository, ItemCategoryRepository>();
         services.AddScoped<IItemImageRepository, ItemImageRepository>();
 
         services.AddScoped<IUnitOfWork, UnitOfWork>();

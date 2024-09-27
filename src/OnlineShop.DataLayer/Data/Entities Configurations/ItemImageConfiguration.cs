@@ -10,11 +10,7 @@ public class ItemImageConfiguration : IEntityTypeConfiguration<ItemImage>
     {
         builder.Property(ii => ii.Id).IsRequired();
 
-        builder.Property(ii => ii.ImageUrl)
-            .IsRequired()
-            .HasMaxLength(100);
-
-        builder.Property(ii => ii.AltText)
+        builder.Property(ii => ii.FileName)
             .IsRequired()
             .HasMaxLength(100);
 

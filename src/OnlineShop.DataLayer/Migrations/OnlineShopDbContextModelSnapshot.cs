@@ -22,6 +22,21 @@ namespace OnlineShop.DataLayer.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
 
+            modelBuilder.Entity("CategoryItem", b =>
+                {
+                    b.Property<Guid>("CategoriesId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("ItemsId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("CategoriesId", "ItemsId");
+
+                    b.HasIndex("ItemsId");
+
+                    b.ToTable("ItemCategories", (string)null);
+                });
+
             modelBuilder.Entity("OnlineShop.DataLayer.Entities.Category", b =>
                 {
                     b.Property<Guid>("Id")
@@ -76,35 +91,13 @@ namespace OnlineShop.DataLayer.Migrations
                     b.ToTable("Items");
                 });
 
-            modelBuilder.Entity("OnlineShop.DataLayer.Entities.ItemCategory", b =>
-                {
-                    b.Property<Guid>("ItemId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("CategoryId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("Id")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("ItemId", "CategoryId");
-
-                    b.HasIndex("CategoryId");
-
-                    b.ToTable("ItemCategories");
-                });
-
             modelBuilder.Entity("OnlineShop.DataLayer.Entities.ItemImage", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("AltText")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("ImageUrl")
+                    b.Property<string>("FileName")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -118,6 +111,21 @@ namespace OnlineShop.DataLayer.Migrations
                     b.ToTable("ItemImage");
                 });
 
+            modelBuilder.Entity("CategoryItem", b =>
+                {
+                    b.HasOne("OnlineShop.DataLayer.Entities.Category", null)
+                        .WithMany()
+                        .HasForeignKey("CategoriesId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("OnlineShop.DataLayer.Entities.Item", null)
+                        .WithMany()
+                        .HasForeignKey("ItemsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("OnlineShop.DataLayer.Entities.Category", b =>
                 {
                     b.HasOne("OnlineShop.DataLayer.Entities.Category", "ParentCategory")
@@ -125,25 +133,6 @@ namespace OnlineShop.DataLayer.Migrations
                         .HasForeignKey("ParentId");
 
                     b.Navigation("ParentCategory");
-                });
-
-            modelBuilder.Entity("OnlineShop.DataLayer.Entities.ItemCategory", b =>
-                {
-                    b.HasOne("OnlineShop.DataLayer.Entities.Category", "Category")
-                        .WithMany("ItemCategories")
-                        .HasForeignKey("CategoryId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("OnlineShop.DataLayer.Entities.Item", "Item")
-                        .WithMany("ItemCategories")
-                        .HasForeignKey("ItemId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Category");
-
-                    b.Navigation("Item");
                 });
 
             modelBuilder.Entity("OnlineShop.DataLayer.Entities.ItemImage", b =>
@@ -159,16 +148,12 @@ namespace OnlineShop.DataLayer.Migrations
 
             modelBuilder.Entity("OnlineShop.DataLayer.Entities.Category", b =>
                 {
-                    b.Navigation("ItemCategories");
-
                     b.Navigation("SubCategories");
                 });
 
             modelBuilder.Entity("OnlineShop.DataLayer.Entities.Item", b =>
                 {
                     b.Navigation("Images");
-
-                    b.Navigation("ItemCategories");
                 });
 #pragma warning restore 612, 618
         }

@@ -25,10 +25,10 @@ public class ItemConfiguration : IEntityTypeConfiguration<Item>
         builder.Property(i => i.QuantityInStock)
             .IsRequired();
 
-        builder.HasMany(i => i.ItemCategories)
-            .WithOne(ic => ic.Item)
-            .HasForeignKey(ic => ic.ItemId);
-
+        builder.HasMany(i => i.Categories)
+            .WithMany(c => c.Items)
+            .UsingEntity(ic => ic.ToTable("ItemCategories"));
+            
         builder.HasMany(i => i.Images)
             .WithOne(i => i.Item)
             .HasForeignKey(ic => ic.ItemId)

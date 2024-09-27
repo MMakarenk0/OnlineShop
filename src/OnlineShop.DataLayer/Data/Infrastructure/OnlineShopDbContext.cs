@@ -13,13 +13,11 @@ public class OnlineShopDbContext : DbContext
 
     public DbSet<Item> Items { get; set; }
     public DbSet<Category> Categories { get; set; }
-    public DbSet<ItemCategory> ItemCategories { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.ApplyConfiguration(new ItemConfiguration());
         modelBuilder.ApplyConfiguration(new CategoryConfiguration());
-        modelBuilder.ApplyConfiguration(new ItemCategoryConfiguration());
 
         base.OnModelCreating(modelBuilder);
     }
