@@ -32,8 +32,19 @@ namespace OnlineShop.Api.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetById(Guid id)
         {
-            var item = await _itemService.GetByIdAsync(id);
-            return Ok(item);
+            try
+            {
+                var item = await _itemService.GetByIdAsync(id);
+                return Ok(item);
+            }
+            catch (KeyNotFoundException)
+            {
+                return NotFound();
+            }
+            catch (Exception)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError);
+            }
         }
 
         [HttpPost]
@@ -41,8 +52,19 @@ namespace OnlineShop.Api.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Add([FromForm] CreateItemDto model)
         {
-            var item = await _itemService.AddAsync(model);
-            return Ok(item);
+            try
+            {
+                var item = await _itemService.AddAsync(model);
+                return Ok(item);
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return BadRequest(ex);
+            }
+            catch (Exception)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError);
+            }
         }
 
         [HttpPut]
@@ -50,8 +72,19 @@ namespace OnlineShop.Api.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> Update([FromForm] UpdateItemDto model)
         {
-            var item = await _itemService.UpdateAsync(model);
-            return Ok(item);
+            try
+            {
+                var item = await _itemService.UpdateAsync(model);
+                return Ok(item);
+            }
+            catch (KeyNotFoundException)
+            {
+                return NotFound();
+            }
+            catch (Exception)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError);
+            }
         }
 
         [HttpDelete("{id}")]
@@ -59,8 +92,8 @@ namespace OnlineShop.Api.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> Delete(Guid id)
         {
-            await _itemService.DeleteAsync(id);
-            return NoContent();
+                await _itemService.DeleteAsync(id);
+                return NoContent();
         }
     }
 }

@@ -10,4 +10,5 @@ public class Item : IEntity
     public ICollection<ItemImage> Images { get; set; } = new List<ItemImage>();
     public DateTime CreatedAt { get; set; } = DateTime.Now;
     public DateTime UpdatedAt { get; set; } = DateTime.Now;
+    public ICollection<ItemTrait> ItemTraits { get; set; }
 }

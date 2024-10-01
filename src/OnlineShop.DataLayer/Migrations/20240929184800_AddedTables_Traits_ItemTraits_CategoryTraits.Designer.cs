@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using OnlineShop.DataLayer.Data.Infrastructure;
 
@@ -11,9 +12,10 @@ using OnlineShop.DataLayer.Data.Infrastructure;
 namespace OnlineShop.DataLayer.Migrations
 {
     [DbContext(typeof(OnlineShopDbContext))]
-    partial class OnlineShopDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240929184800_AddedTables_Traits_ItemTraits_CategoryTraits")]
+    partial class AddedTables_Traits_ItemTraits_CategoryTraits
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -70,7 +72,7 @@ namespace OnlineShop.DataLayer.Migrations
 
                     b.HasIndex("ParentId");
 
-                    b.ToTable("Categories", (string)null);
+                    b.ToTable("Categories");
                 });
 
             modelBuilder.Entity("OnlineShop.DataLayer.Entities.Item", b =>
@@ -103,7 +105,7 @@ namespace OnlineShop.DataLayer.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Items", (string)null);
+                    b.ToTable("Items");
                 });
 
             modelBuilder.Entity("OnlineShop.DataLayer.Entities.ItemImage", b =>
@@ -124,7 +126,7 @@ namespace OnlineShop.DataLayer.Migrations
 
                     b.HasIndex("ItemId");
 
-                    b.ToTable("Images", (string)null);
+                    b.ToTable("Images");
                 });
 
             modelBuilder.Entity("OnlineShop.DataLayer.Entities.ItemTrait", b =>
@@ -147,7 +149,7 @@ namespace OnlineShop.DataLayer.Migrations
 
                     b.HasIndex("TraitId");
 
-                    b.ToTable("itemTraits", (string)null);
+                    b.ToTable("itemTraits");
                 });
 
             modelBuilder.Entity("OnlineShop.DataLayer.Entities.Trait", b =>
@@ -163,7 +165,7 @@ namespace OnlineShop.DataLayer.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Traits", (string)null);
+                    b.ToTable("Traits");
                 });
 
             modelBuilder.Entity("CategoryItem", b =>

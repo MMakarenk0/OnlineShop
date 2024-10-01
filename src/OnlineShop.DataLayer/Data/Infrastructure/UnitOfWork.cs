@@ -10,17 +10,23 @@ public class UnitOfWork : IUnitOfWork
     public IItemRepository ItemRepository { get; }
     public ICategoryRepository CategoryRepository { get; }
     public IItemImageRepository ItemImageRepository { get; }
+    public ITraitRepository TraitRepository { get; }
+    public IItemTraitRepository ItemTraitRepository { get; }
 
     public UnitOfWork(
         OnlineShopDbContext dbContext,
         IItemRepository itemRepository,
         ICategoryRepository categoryRepository,
-        IItemImageRepository itemImageRepository)
+        IItemImageRepository itemImageRepository,
+        ITraitRepository traitRepository,
+        IItemTraitRepository itemTraitRepository)
     {
         _dbContext = dbContext;
         ItemRepository = itemRepository;
         CategoryRepository = categoryRepository;
         ItemImageRepository = itemImageRepository;
+        TraitRepository = traitRepository;
+        ItemTraitRepository = itemTraitRepository;
     }
     public async Task SaveChangesAsync()
     {

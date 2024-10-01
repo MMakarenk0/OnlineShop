@@ -14,6 +14,9 @@ public class AutomapperBLLProfile : Profile
             .ForMember(
                 dest => dest.ImagesUrls,
                 opt => opt.Ignore())
+            .ForMember(
+                dest => dest.Traits, 
+                opt => opt.MapFrom(src => src.ItemTraits.Select(it => it.Trait)))
             .ReverseMap();
 
         CreateMap<Item, CreateItemDto>()
@@ -46,8 +49,11 @@ public class AutomapperBLLProfile : Profile
             .ReverseMap();
         #endregion
 
-        #region ItemImageMapping
-
+        #region TraitMapping
+        CreateMap<Trait, TraitDto>().ReverseMap();
+        CreateMap<CreateTraitDto, Trait>();
+        CreateMap<UpdateTraitDto, Trait>();
         #endregion
+
     }
 }

@@ -7,6 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using OnlineShop.DataLayer;
 using OnlineShop.DataLayer.Data.Infrastructure;
 using OnlineShop.DataLayer.Data.Repositories.Interfaces;
+using OnlineShop.DataLayer.Data.Repositories.Realization;
 
 namespace DataLayer;
 
@@ -26,6 +27,8 @@ public static class DataLayerDI
         services.AddScoped<IItemRepository, ItemRepository>();
         services.AddScoped<ICategoryRepository, CategoryRepository>();
         services.AddScoped<IItemImageRepository, ItemImageRepository>();
+        services.AddScoped<ITraitRepository, TraitRepository>();
+        services.AddScoped<IItemTraitRepository, ItemTraitRepository>();
 
         services.AddScoped<IUnitOfWork, UnitOfWork>();
         services.AddScoped<DataSeeder>();

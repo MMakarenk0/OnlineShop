@@ -1,7 +1,7 @@
+using BLL.Extensions;
+using DataLayer;
 using OnlineShop.DataLayer;
 using OnlineShop.DataLayer.Data.Infrastructure;
-using DataLayer;
-using BLL.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Configuration;

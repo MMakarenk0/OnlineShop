@@ -13,11 +13,18 @@ public class OnlineShopDbContext : DbContext
 
     public DbSet<Item> Items { get; set; }
     public DbSet<Category> Categories { get; set; }
+    public DbSet<ItemImage> Images { get; set; }
+    public DbSet<Trait> Traits { get; set; }
+    public DbSet<ItemTrait> ItemTraits { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.ApplyConfiguration(new ItemConfiguration());
         modelBuilder.ApplyConfiguration(new CategoryConfiguration());
+        modelBuilder.ApplyConfiguration(new ItemImageConfiguration());
+        modelBuilder.ApplyConfiguration(new TraitConfiguration());
+        modelBuilder.ApplyConfiguration(new ItemTraitConfiguration());
+
 
         base.OnModelCreating(modelBuilder);
     }

@@ -22,5 +22,9 @@ public class CategoryConfiguration : IEntityTypeConfiguration<Category>
         builder.HasMany(c => c.Items)
             .WithMany(i => i.Categories)
             .UsingEntity(ic => ic.ToTable("ItemCategories"));
+
+        builder.HasMany(c => c.Traits)
+            .WithMany(i => i.Categories)
+            .UsingEntity(ic => ic.ToTable("CategoryTraits"));
     }
 }

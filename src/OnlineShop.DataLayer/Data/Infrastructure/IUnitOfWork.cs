@@ -8,6 +8,8 @@ public interface IUnitOfWork
     IItemRepository ItemRepository { get; }
     ICategoryRepository CategoryRepository { get; }
     IItemImageRepository ItemImageRepository { get; }
+    ITraitRepository TraitRepository { get; }
+    IItemTraitRepository ItemTraitRepository { get; }
 
     Task SaveChangesAsync();
 }

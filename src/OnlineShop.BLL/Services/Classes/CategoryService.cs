@@ -28,6 +28,10 @@ public class CategoryService : ICategoryService
         if (model.ParentId.HasValue)
         {
             var parent = await categoryRepository.Find(model.ParentId.Value);
+
+            if (parent == null)
+                throw new KeyNotFoundException($"Category with Id {model.ParentId.Value} not found.");
+
             category.ParentCategory = parent;
         }
 
@@ -53,6 +57,7 @@ public class CategoryService : ICategoryService
 
         var categories = await categoryRepository.GetAll()
             .Include(c => c.SubCategories)
+            .Include(c => c.Traits)
             .ToListAsync();
 
         return _mapper.Map<IEnumerable<CategoryDto>>(categories);
@@ -64,7 +69,8 @@ public class CategoryService : ICategoryService
 
         var category = await categoryRepository.Find(id,
             include: i => i
-                .Include(i => i.SubCategories));
+                .Include(i => i.SubCategories)
+                .Include(c => c.Traits));
 
         return _mapper.Map<CategoryDto>(category);
     }

@@ -6,4 +6,5 @@ public class CategoryDto
     public string Name { get; set; }
     public Guid? ParentId { get; set; }
     public ICollection<CategoryDto> SubCategories { get; set; }
+    public ICollection<TraitDto> Traits { get; set; }
 }

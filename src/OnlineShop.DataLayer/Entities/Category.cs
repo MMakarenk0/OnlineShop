@@ -7,4 +7,5 @@ public class Category : IEntity
     public Category ParentCategory { get; set; }
     public ICollection<Category> SubCategories { get; set; }
     public ICollection<Item> Items { get; set; } = new List<Item>();
+    public ICollection<Trait> Traits { get; set; }
 }

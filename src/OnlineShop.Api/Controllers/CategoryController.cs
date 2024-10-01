@@ -53,8 +53,20 @@ namespace OnlineShop.Api.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Add([FromForm] CreateCategoryDto model)
         {
-            var category = await _categoryService.AddAsync(model);
-            return Ok(category);
+            try
+            {
+                var category = await _categoryService.AddAsync(model);
+                return Ok(category);
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return BadRequest(ex);
+            }
+            catch (Exception)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError);
+            }
+            
         }
 
         [HttpPut]

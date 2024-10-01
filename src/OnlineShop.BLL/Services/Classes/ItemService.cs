@@ -27,6 +27,8 @@ public class ItemService : IItemService
         var itemRepository = _unitOfWork.ItemRepository;
         var itemImageRepository = _unitOfWork.ItemImageRepository;
         var categoryRepository = _unitOfWork.CategoryRepository;
+        var traitRepository = _unitOfWork.TraitRepository;
+        var itemTraitRepository = _unitOfWork.ItemTraitRepository;
 
         var item = _mapper.Map<Item>(model);
 
@@ -38,9 +40,9 @@ public class ItemService : IItemService
 
                 if (categoryExists == null)
                 {
-                    throw new Exception($"Category with Id {categoryId} not found.");
+                    throw new KeyNotFoundException($"Category with Id {categoryId} not found.");
                 }
-
+                
                 item.Categories.Add(categoryExists);
             }
         }
@@ -63,6 +65,29 @@ public class ItemService : IItemService
                 item.Images.Add(itemImage);
             }
         }
+        if (model.TraitValues != null && model.TraitValues.Any())
+        {
+            foreach (var traitValueDto in model.TraitValues)
+            {
+                var trait = await traitRepository.Find(traitValueDto.TraitId);
+
+                if (trait == null)
+                {
+                    throw new KeyNotFoundException($"Trait with Id {traitValueDto.TraitId} not found.");
+                }
+
+                var itemTrait = new ItemTrait
+                {
+                    Id = Guid.NewGuid(),
+                    ItemId = item.Id,
+                    TraitId = trait.Id,
+                    Value = traitValueDto.Value
+                };
+
+                await itemTraitRepository.Create(itemTrait);
+                item.ItemTraits.Add(itemTrait);
+            }
+        }
 
         await itemRepository.Create(item);
 
@@ -78,7 +103,7 @@ public class ItemService : IItemService
         var item = await itemRepository.Find(id);
 
         if (item == null)
-            throw new Exception($"Item with Id {id} not found.");
+            throw new KeyNotFoundException($"Item with Id {id} not found.");
 
         foreach (var image in item.Images)
         {
@@ -96,6 +121,8 @@ public class ItemService : IItemService
             .Include(i => i.Images)
             .Include(i => i.Categories)
                 .ThenInclude(c => c.SubCategories)
+            .Include(i => i.ItemTraits)
+                .ThenInclude(it => it.Trait)
             .ToListAsync();
 
         var itemDtos = _mapper.Map<IEnumerable<ItemDto>>(items);
@@ -122,10 +149,12 @@ public class ItemService : IItemService
             include: i => i
             .Include(i => i.Images)
             .Include(i => i.Categories)
-            .ThenInclude(c => c.SubCategories));
+                .ThenInclude(c => c.SubCategories)
+            .Include(i => i.ItemTraits)
+                .ThenInclude(it => it.Trait));
 
         if (item == null)
-            throw new Exception($"Item with Id {id} not found.");
+            throw new KeyNotFoundException($"Item with Id {id} not found.");
 
         var itemDto = _mapper.Map<ItemDto>(item);
 
@@ -143,16 +172,17 @@ public class ItemService : IItemService
         var item = await itemRepository.Find(model.Id,
             include: i => i
             .Include(i => i.Images)
-            .Include(i => i.Categories));
+            .Include(i => i.Categories)
+            .Include(i => i.ItemTraits));
 
         if (item == null)
-            throw new Exception($"Item with Id {model.Id} not found.");
+            throw new KeyNotFoundException($"Item with Id {model.Id} not found.");
 
         _mapper.Map(model, item);
 
         await UpdateItemCategory(model, item);
-
         await UpdateItemImages(item, model.ImageFiles.ToList());
+        await UpdateItemTraits(model, item);
 
         var result = await itemRepository.Update(item);
 
@@ -175,7 +205,7 @@ public class ItemService : IItemService
 
                 if (categoryExists == null)
                 {
-                    throw new Exception($"Category with Id {categoryId} not found.");
+                    throw new KeyNotFoundException($"Category with Id {categoryId} not found.");
                 }
 
                 item.Categories.Add(categoryExists);
@@ -212,6 +242,60 @@ public class ItemService : IItemService
 
             await itemImageRepository.Create(itemImage);
             item.Images.Add(itemImage);
+        }
+    }
+    private async Task UpdateItemTraits(UpdateItemDto model, Item item)
+    {
+        var itemTraitRepository = _unitOfWork.ItemTraitRepository;
+        var traitRepository = _unitOfWork.TraitRepository;
+
+        // Delete existing traits that are not passed to the model
+        var existingTraitIds = item.ItemTraits.Select(t => t.TraitId).ToList();
+        var newTraitIds = model.TraitValues?.Select(t => t.TraitId).ToList() ?? new List<Guid>();
+
+        // Remove those traits that are missing from the updated data
+        var traitsToRemove = item.ItemTraits
+            .Where(t => !newTraitIds.Contains(t.TraitId))
+            .ToList();
+
+        foreach (var traitToRemove in traitsToRemove)
+        {
+            item.ItemTraits.Remove(traitToRemove);
+            await itemTraitRepository.Delete(traitToRemove.Id);
+        }
+        // Update or add new traits values
+        if (model.TraitValues != null && model.TraitValues.Any())
+        {
+            foreach (var traitValueDto in model.TraitValues)
+            {
+                var existingItemTrait = item.ItemTraits
+                    .FirstOrDefault(t => t.TraitId == traitValueDto.TraitId);
+
+                if (existingItemTrait != null)
+                {
+                    existingItemTrait.Value = traitValueDto.Value;
+                    await itemTraitRepository.Update(existingItemTrait);
+                }
+                else
+                {
+                    var trait = await traitRepository.Find(traitValueDto.TraitId);
+                    if (trait == null)
+                    {
+                        throw new KeyNotFoundException($"Trait with Id {traitValueDto.TraitId} not found.");
+                    }
+
+                    var newItemTrait = new ItemTrait
+                    {
+                        Id = Guid.NewGuid(),
+                        ItemId = item.Id,
+                        TraitId = trait.Id,
+                        Value = traitValueDto.Value
+                    };
+
+                    await itemTraitRepository.Create(newItemTrait);
+                    item.ItemTraits.Add(newItemTrait);
+                }
+            }
         }
     }
 }
