@@ -110,6 +110,8 @@ public class ItemService : IItemService
             await _blobStorageService.DeleteFileAsync(image.FileName);
         }
 
+        await itemRepository.Delete(id);
+
         await _unitOfWork.SaveChangesAsync();
     }
 

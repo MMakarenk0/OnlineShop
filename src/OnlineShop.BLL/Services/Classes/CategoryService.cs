@@ -88,6 +88,13 @@ public class CategoryService : ICategoryService
         if (model.ParentId.HasValue)
         {
             var parent = await categoryRepository.Find(model.ParentId.Value);
+
+            if (category.Id == model.ParentId.Value)
+                throw new InvalidOperationException("Category cannot reference itself as a parent.");
+
+            if (HasCyclicReference(category, parent))
+                throw new InvalidOperationException("Cyclic reference detected.");
+
             category.ParentCategory = parent;
         }
 
@@ -96,5 +103,20 @@ public class CategoryService : ICategoryService
         await _unitOfWork.SaveChangesAsync();
 
         return category.Id;
+    }
+
+    private bool HasCyclicReference(Category category, Category parentCategory)
+    {
+        if (parentCategory == null)
+        {
+            return false;
+        }
+
+        if (category.Id == parentCategory.Id)
+        {
+            return true;
+        }
+
+        return HasCyclicReference(category, parentCategory.ParentCategory);
     }
 }

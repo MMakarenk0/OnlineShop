@@ -51,15 +51,10 @@ public class ItemServiceTests
         var model = new CreateItemDto
         {
             Name = "New Item",
-            CategoryIds = new List<Guid> { Guid.NewGuid() },
             ImageFiles = new List<IFormFile>
             {
                 Substitute.For<IFormFile>(),
                 Substitute.For<IFormFile>()
-            },
-            TraitValues = new List<TraitValueDto>
-            {
-                new TraitValueDto { TraitId = Guid.NewGuid(), Value = "Value1" }
             }
         };
         var item = new Item { Id = Guid.NewGuid(), Name = "New Item" };

@@ -83,6 +83,10 @@ namespace OnlineShop.Api.Controllers
             {
                 return NotFound();
             }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(new { Message = ex.Message });
+            }
             catch (Exception)
             {
                 return StatusCode(StatusCodes.Status500InternalServerError);
