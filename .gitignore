@@ -398,4 +398,4 @@ FodyWeavers.xsd
 *.sln.iml
 
 # Ignore local app settings file
-appsettings.local.json
+appsettings.local-Development.json
