@@ -12,4 +12,5 @@ public interface IItemService
     Task<Guid> UpdateAsync(UpdateItemDto model);
     Task DeleteAsync(Guid id);
     Task<ItemDto> GetByIdAsync(Guid id);
+    Task<IEnumerable<ItemDto>> GetByFilters(ItemFilterDto filters);
 }

@@ -164,6 +164,66 @@ public class ItemService : IItemService
 
         return itemDto;
     }
+    public async Task<IEnumerable<ItemDto>> GetByFilters(ItemFilterDto filters)
+    {
+        var itemRepository = _unitOfWork.ItemRepository;
+
+        var itemsQuery = itemRepository.GetAll()
+            .Include(i => i.Categories)
+            .Include(i => i.ItemTraits)
+            .Include(i => i.Images)
+            .AsQueryable();
+
+        if (!string.IsNullOrWhiteSpace(filters.Name))
+        {
+            itemsQuery = itemsQuery.Where(i => i.Name.Contains(filters.Name));
+        }
+
+        if (filters.MinPrice.HasValue)
+        {
+            itemsQuery = itemsQuery.Where(i => i.Price >= filters.MinPrice.Value);
+        }
+
+        if (filters.MaxPrice.HasValue)
+        {
+            itemsQuery = itemsQuery.Where(i => i.Price <= filters.MaxPrice.Value);
+        }
+
+        if (filters.MinQuantityInStock.HasValue)
+        {
+            itemsQuery = itemsQuery.Where(i => i.QuantityInStock >= filters.MinQuantityInStock.Value);
+        }
+
+        if (filters.MaxQuantityInStock.HasValue)
+        {
+            itemsQuery = itemsQuery.Where(i => i.QuantityInStock <= filters.MaxQuantityInStock.Value);
+        }
+
+        if (filters.CategoryId.HasValue)
+        {
+            itemsQuery = itemsQuery.Where(i => i.Categories.Any(c => c.Id == filters.CategoryId.Value));
+        }
+
+        if (filters.CreatedAfter.HasValue)
+        {
+            itemsQuery = itemsQuery.Where(i => i.CreatedAt >= filters.CreatedAfter.Value);
+        }
+
+        if (filters.CreatedBefore.HasValue)
+        {
+            itemsQuery = itemsQuery.Where(i => i.CreatedAt <= filters.CreatedBefore.Value);
+        }
+
+        if (filters.TraitIds != null && filters.TraitIds.Any())
+        {
+            itemsQuery = itemsQuery
+                .Where(i => i.ItemTraits.Any(it => filters.TraitIds.Contains(it.TraitId)));
+        }
+
+        var filteredItems = await itemsQuery.ToListAsync();
+
+        return _mapper.Map<IEnumerable<ItemDto>>(filteredItems);
+    }
 
     public async Task<Guid> UpdateAsync(UpdateItemDto model)
     {

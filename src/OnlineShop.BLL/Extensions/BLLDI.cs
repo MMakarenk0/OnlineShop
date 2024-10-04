@@ -14,5 +14,6 @@ public static class BLLDI
         services.AddScoped<IItemService, ItemService>();
         services.AddScoped<ICategoryService, CategoryService>();
         services.AddScoped<IBlobStorageService, BlobStorageService >();
+        services.AddScoped<ITraitService, TraitService>();
     }
 }

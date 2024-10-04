@@ -1,40 +1,40 @@
-﻿using AutoMapper;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using OnlineShop.BLL.Dtos.Create;
 using OnlineShop.BLL.Dtos.Read;
 using OnlineShop.BLL.Dtos.Update;
+using OnlineShop.BLL.Services.Classes;
 using OnlineShop.BLL.Services.Interfaces;
 
-namespace OnlineShop.Api.Controllers
+namespace OnlineShop.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class ItemController : ControllerBase
+    public class TraitController : ControllerBase
     {
-        private readonly IItemService _itemService;
+        private readonly ITraitService _traitService;
 
-        public ItemController(IItemService itemService)
+        public TraitController(ITraitService traitService)
         {
-            _itemService = itemService;
+            _traitService = traitService;
         }
 
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<IActionResult> GetAll()
         {
-            var items = await _itemService.GetAllAsync();
-            return Ok(items);
+            var traits = await _traitService.GetAllAsync();
+            return Ok(traits);
         }
 
-        [HttpGet("{id}")]
+        [HttpGet("{id:guid}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetById(Guid id)
         {
             try
             {
-                var item = await _itemService.GetByIdAsync(id);
-                return Ok(item);
+                var trait = await _traitService.GetByIdAsync(id);
+                return Ok(trait);
             }
             catch (KeyNotFoundException)
             {
@@ -46,31 +46,15 @@ namespace OnlineShop.Api.Controllers
             }
         }
 
-        [HttpGet("filter")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> GetByFilters([FromQuery] ItemFilterDto filters)
-        {
-            try
-            {
-                var filteredItems = await _itemService.GetByFilters(filters);
-                return Ok(filteredItems);
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(new { message = ex.Message });
-            }
-        }
-
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> Add([FromForm] CreateItemDto model)
+        public async Task<IActionResult> Add([FromBody] CreateTraitDto model)
         {
             try
             {
-                var item = await _itemService.AddAsync(model);
-                return Ok(item);
+                var trait = await _traitService.AddAsync(model);
+                return Ok(trait);
             }
             catch (KeyNotFoundException ex)
             {
@@ -85,12 +69,13 @@ namespace OnlineShop.Api.Controllers
         [HttpPut]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> Update([FromForm] UpdateItemDto model)
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> Update([FromBody] UpdateTraitDto model)
         {
             try
             {
-                var item = await _itemService.UpdateAsync(model);
-                return Ok(item);
+                var trait = await _traitService.UpdateAsync(model);
+                return Ok(trait);
             }
             catch (KeyNotFoundException)
             {
@@ -102,13 +87,13 @@ namespace OnlineShop.Api.Controllers
             }
         }
 
-        [HttpDelete("{id}")]
+        [HttpDelete("{id:guid}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> Delete(Guid id)
         {
-                await _itemService.DeleteAsync(id);
-                return NoContent();
+            await _traitService.DeleteAsync(id);
+            return Ok();
         }
     }
 }

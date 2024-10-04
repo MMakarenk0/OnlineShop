@@ -54,7 +54,7 @@ public class TraitService : ITraitService
         var trait = await traitRepository.Find(id);
 
         if (trait == null)
-            throw new Exception($"Trait with Id {id} not found.");
+            throw new KeyNotFoundException($"Trait with Id {id} not found.");
 
         var traitDto = _mapper.Map<TraitDto>(trait);
 
@@ -68,7 +68,7 @@ public class TraitService : ITraitService
         var trait = await traitRepository.Find(model.Id);
 
         if (trait == null)
-            throw new Exception($"Trait with Id {model.Id} not found.");
+            throw new KeyNotFoundException($"Trait with Id {model.Id} not found.");
 
         _mapper.Map(model, trait);
 
