@@ -2,9 +2,11 @@
 using DataLayer.Data.Infrastructure;
 using DataLayer.Data.Repositories.Interfaces;
 using Microsoft.AspNetCore.Http;
+using MockQueryable.NSubstitute;
 using NSubstitute;
 using OnlineShop.BLL.Dtos.Create;
 using OnlineShop.BLL.Dtos.Read;
+using OnlineShop.BLL.Dtos.Update;
 using OnlineShop.BLL.Services.Classes;
 using OnlineShop.BLL.Services.Interfaces;
 using OnlineShop.DataLayer.Data.Repositories.Interfaces;
@@ -104,13 +106,14 @@ public class ItemServiceTests
             new Item { Id = Guid.NewGuid(), Name = "Item 1", Images = new List<ItemImage>() },
             new Item { Id = Guid.NewGuid(), Name = "Item 2", Images = new List<ItemImage>() }
         };
+        var mock = items.BuildMock();
         var itemDtos = new List<ItemDto>
         {
             new ItemDto { Id = items[0].Id, Name = "Item 1" },
             new ItemDto { Id = items[1].Id, Name = "Item 2" }
         };
-        _itemRepository.GetAll().Returns(items.AsQueryable());
-        _mapper.Map<IEnumerable<ItemDto>>(items).Returns(itemDtos);
+        _itemRepository.GetAll().Returns(mock);
+        _mapper.Map<IEnumerable<ItemDto>>(default).ReturnsForAnyArgs(itemDtos);
 
         // Act
         var result = await _itemService.GetAllAsync();
@@ -128,7 +131,7 @@ public class ItemServiceTests
         var item = new Item { Id = itemId, Name = "Test Item" };
         var itemDto = new ItemDto { Id = itemId, Name = "Test Item" };
 
-        _itemRepository.Find(itemId).Returns(Task.FromResult(item));
+        _itemRepository.Find(item.Id, Arg.Any<Func<IQueryable<Item>, IQueryable<Item>>>()).Returns(Task.FromResult(item));
         _mapper.Map<ItemDto>(item).Returns(itemDto);
 
         // Act
@@ -136,7 +139,90 @@ public class ItemServiceTests
 
         // Assert
         Assert.Equal(itemDto.Id, result.Id);
-        await _itemRepository.Received(1).Find(itemId);
+        await _itemRepository.Received(1).Find(itemId, Arg.Any<Func<IQueryable<Item>, IQueryable<Item>>>());
+    }
+
+    [Fact]
+    public async Task GetByFilters_ShouldReturnFilteredItems()
+    {
+        // Arrange
+        var filters = new ItemFilterDto
+        {
+            Name = "Test",
+            MinPrice = 10,
+            MaxPrice = 50,
+            MinQuantityInStock = 5,
+            MaxQuantityInStock = 20,
+        };
+
+        var items = new List<Item>
+        {
+            new Item {
+                Id = Guid.NewGuid(),
+                Name = "Test Item",
+                Price = 20,
+                QuantityInStock = 10,
+                CreatedAt = DateTime.UtcNow
+            }
+        };
+
+        var itemDtos = new List<ItemDto>
+        {
+            new ItemDto
+            {
+                Id = items[0].Id,
+                Name = items[0].Name,
+                Price = items[0].Price,
+                QuantityInStock = items[0].QuantityInStock,
+                CreatedAt = items[0].CreatedAt
+            }
+        };
+
+        var mockQuery = items.BuildMock().AsQueryable();
+        _mapper.Map<IEnumerable<ItemDto>>(default).ReturnsForAnyArgs(itemDtos);
+        _itemRepository.GetAll().Returns(mockQuery);
+
+        // Act
+        var result = await _itemService.GetByFilters(filters);
+
+        // Assert
+        Assert.Single(result);
+        Assert.Equal(items.First().Id, result.First().Id);
+        _itemRepository.Received(1).GetAll();
+    }
+
+    [Fact]
+    public async Task UpdateAsync_ShouldUpdateItemAndReturnId()
+    {
+        // Arrange
+        var itemId = Guid.NewGuid();
+        var existingItem = new Item
+        {
+            Id = itemId,
+            Name = "Old Item",
+            Images = new List<ItemImage> { new ItemImage { FileName = "old_image.jpg" } },
+        };
+
+        var model = new UpdateItemDto
+        {
+            Id = itemId,
+            Name = "Updated Item",
+            ImageFiles = new List<IFormFile> { Substitute.For<IFormFile>() },
+        };
+
+        _itemRepository.Find(itemId, Arg.Any<Func<IQueryable<Item>, IQueryable<Item>>>())
+            .Returns(existingItem);
+        _mapper.Map(Arg.Any<UpdateItemDto>(), Arg.Any<Item>()).Returns(existingItem);
+        var updatedItem = existingItem;
+        _itemRepository.Update(Arg.Any<Item>()).Returns(updatedItem);
+
+        // Act
+        var result = await _itemService.UpdateAsync(model);
+
+        // Assert
+        Assert.Equal(itemId, result);
+        await _itemRepository.Received(1).Update(existingItem);
+        await _unitOfWork.Received(1).SaveChangesAsync();
     }
 
 }

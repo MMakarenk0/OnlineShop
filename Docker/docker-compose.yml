@@ -1,0 +1,53 @@
+services:
+  database:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: sqlserver
+    environment:
+      - SA_PASSWORD=${SA_PASSWORD}
+      - ACCEPT_EULA=Y
+    ports:
+      - "1433:1433"
+    restart: always
+
+  backend:
+    image: api
+    env_file:
+      - .env
+    build:
+      context: ../Api
+      dockerfile: Dockerfile
+    ports:
+      - "8000:80"
+    restart: always
+    depends_on:
+      - database
+
+  seq:
+    image: datalust/seq:latest
+    container_name: online-shop-seq
+    environment:
+      - ACCEPT_EULA=Y
+    ports:
+      - 5341:5341
+      - 8081:80
+
+  # frontend:
+    # image: front
+    # build:
+      # context: ../Client
+      # dockerfile: Dockerfile
+    # volumes:
+      # - ../Client/build:/usr/share/nginx/html
+    # restart: always
+
+  # proxy:
+    # image: nginx:mainline
+    # volumes:
+      # - ./nginx.conf:/etc/nginx/nginx.conf
+    # ports:
+      # - "3000:81"
+    # depends_on:
+      # - backend
+      # - frontend
+    # restart: always
+

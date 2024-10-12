@@ -2,23 +2,13 @@ using BLL.Extensions;
 using DataLayer;
 using OnlineShop.DataLayer;
 using OnlineShop.DataLayer.Data.Infrastructure;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Host.ConfigureAppConfiguration((context, config) =>
-{
-    var env = context.HostingEnvironment;
-
-    config.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
-
-    config.AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true, reloadOnChange: true);
-
-    config.AddJsonFile($"appsettings.local-{env.EnvironmentName}.json", optional: true, reloadOnChange: true);
-
-    config.AddEnvironmentVariables();
-});
-
 var configuration = builder.Configuration;
+
+configuration.AddEnvironmentVariables();
 
 // Add services to the container.
 builder.Services.AddControllers();
@@ -40,14 +30,19 @@ builder.Services.AddCors(options =>
     });
 });
 
+builder.Host.UseSerilog((context, configuration) =>
+    configuration.ReadFrom.Configuration(context.Configuration));
+
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+//if (app.Environment.IsDevelopment())
+//{
+//    app.UseSwagger();
+//    app.UseSwaggerUI();
+//}
+
+app.UseSwagger();
+app.UseSwaggerUI();
 
 using (var scope = app.Services.CreateScope())
 {
@@ -69,8 +64,10 @@ using (var scope = app.Services.CreateScope())
     }
 }
 
+app.UseSerilogRequestLogging();
 app.UseHttpsRedirection();
 app.UseCors("AllowSpecificOrigins");
 app.UseAuthorization();
 app.MapControllers();
+
 app.Run();

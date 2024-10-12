@@ -222,6 +222,8 @@ public class ItemService : IItemService
 
         var filteredItems = await itemsQuery.ToListAsync();
 
+        // TODO Add SAS Urls for filtered items!
+
         return _mapper.Map<IEnumerable<ItemDto>>(filteredItems);
     }
 
@@ -308,6 +310,8 @@ public class ItemService : IItemService
     }
     private async Task UpdateItemTraits(UpdateItemDto model, Item item)
     {
+        if (model.TraitValues == null || !model.TraitValues.Any()) return;
+
         var itemTraitRepository = _unitOfWork.ItemTraitRepository;
         var traitRepository = _unitOfWork.TraitRepository;
 
@@ -326,37 +330,34 @@ public class ItemService : IItemService
             await itemTraitRepository.Delete(traitToRemove.Id);
         }
         // Update or add new traits values
-        if (model.TraitValues != null && model.TraitValues.Any())
+        foreach (var traitValueDto in model.TraitValues)
         {
-            foreach (var traitValueDto in model.TraitValues)
+            var existingItemTrait = item.ItemTraits
+                .FirstOrDefault(t => t.TraitId == traitValueDto.TraitId);
+
+            if (existingItemTrait != null)
             {
-                var existingItemTrait = item.ItemTraits
-                    .FirstOrDefault(t => t.TraitId == traitValueDto.TraitId);
-
-                if (existingItemTrait != null)
+                existingItemTrait.Value = traitValueDto.Value;
+                await itemTraitRepository.Update(existingItemTrait);
+            }
+            else
+            {
+                var trait = await traitRepository.Find(traitValueDto.TraitId);
+                if (trait == null)
                 {
-                    existingItemTrait.Value = traitValueDto.Value;
-                    await itemTraitRepository.Update(existingItemTrait);
+                    throw new KeyNotFoundException($"Trait with Id {traitValueDto.TraitId} not found.");
                 }
-                else
+
+                var newItemTrait = new ItemTrait
                 {
-                    var trait = await traitRepository.Find(traitValueDto.TraitId);
-                    if (trait == null)
-                    {
-                        throw new KeyNotFoundException($"Trait with Id {traitValueDto.TraitId} not found.");
-                    }
+                    Id = Guid.NewGuid(),
+                    ItemId = item.Id,
+                    TraitId = trait.Id,
+                    Value = traitValueDto.Value
+                };
 
-                    var newItemTrait = new ItemTrait
-                    {
-                        Id = Guid.NewGuid(),
-                        ItemId = item.Id,
-                        TraitId = trait.Id,
-                        Value = traitValueDto.Value
-                    };
-
-                    await itemTraitRepository.Create(newItemTrait);
-                    item.ItemTraits.Add(newItemTrait);
-                }
+                await itemTraitRepository.Create(newItemTrait);
+                item.ItemTraits.Add(newItemTrait);
             }
         }
     }
