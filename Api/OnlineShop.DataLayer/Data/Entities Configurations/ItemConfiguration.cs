@@ -20,7 +20,8 @@ public class ItemConfiguration : IEntityTypeConfiguration<Item>
             .HasMaxLength(100);
 
         builder.Property(i => i.Price)
-            .IsRequired();
+            .IsRequired()
+            .HasPrecision(18, 2);
 
         builder.Property(i => i.QuantityInStock)
             .IsRequired();

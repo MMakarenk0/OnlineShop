@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Epic8</title>
+
+  <link rel="stylesheet" href="static/CSS/swiper-bundle.min.css" />
+  <link rel="stylesheet" href="static/CSS/trialcards.css" />
+  
+
+</head>
+<body>
+  <header>
+    <link rel="stylesheet" href="static/CSS/Heafer.css"> 
+    <img src="/static/img/mainicon.png">
+    <h1>Computers</h1>
+      <div class="container">
+        <a href="account" class="itemimg">
+          <img src="/static/img/account.png">
+        </a>
+        <a href="cart.html" class="itemimg">
+          <img src="/static/img/shopingcard.svg">
+        </a>
+      </div>
+  </header>
+
+<main>
+  <section id="products-list">
+  </section>
+  <section id="cart">
+    <h1 class="cart__title">Cart</h1>
+    <ul class="cart_list">
+      <li>Pinos</li>
+      <li>Pinos</li>
+      <li>Pinos</li>
+    </ul>    
+  </section>
+</main>
+
+</body>
+</html>
+  <!--
+  <ul class="list">
+    <li class="list_item active" data-id="0">All</li>
+    <li class="list_item" data-id="1">Setups</li>
+    <li class="list_item" data-id="2">Components</li>
+    <li class="list_item" data-id="3">Accessories</li>
+  </ul> 
+
+  <div class="dropdown">
+    <button onclick="myFunction()" class="dropbtn">Dropdown</button>
+    <div id="myDropdown" class="dropdown-content">
+      <a href="#">Link 1</a>
+      <a href="#">Link 2</a>
+      <a href="#">Link 3</a>
+    </div>
+    <script src="/js/filterbutton.js"></script>
+  </div>
+-->
+  <!--
+  <div>
+  <div class="block">
+    <div class="blocks_row">
+      <div class="blocks_item ctg1 setup1"> 
+        <img src="/static/img/setup1.jpg">
+        <p>Redy solutions for gamers are waiting for you!</p>
+        <h2>59.99$</h2>
+        <a href="Setups.html">Learn more</a>
+      </div>
+      <div class="blocks_item ctg2 computer1"> 
+        <img src="/static/img/setup1.jpg">
+        <p>Redy solutions for gamers are waiting for you!</p>
+        <h2>59.99$</h2>
+        <a href="Setups.html">Learn more</a>
+      </div>
+      <div class="blocks_item ctg1 component1"> 
+        <img src="/static/img/setup1.jpg">
+        <p>Redy solutions for gamers are waiting for you!</p>
+        <h2>59.99$</h2>
+        <a href="Setups.html">Learn more</a>
+      </div>
+      <div class="blocks_item ctg3 accessory1"> 
+        <img src="/static/img/setup1.jpg">
+        <p>Redy solutions for gamers are waiting for you!</p>
+        <h2>59.99$</h2>
+        <a href="Setups.html">Learn more</a>
+      </div>  
+    </div>
+  </div>
+
+  <div class="block">
+    <div class="blocks_row">
+      <div class="blocks_item ctg1 setup1">
+        <img src="/static/img/setup1.jpg">
+        <p>Redy solutions for gamers are waiting for you!</p>
+        <h2>59.99$</h2>
+        <a href="Setups.html">Learn more</a>
+      </div>
+      <div class="blocks_item ctg2 computer1">
+        <img src="/static/img/setup1.jpg">
+        <p>Redy solutions for gamers are waiting for you!</p>
+        <h2>59.99$</h2>
+        <a href="Setups.html">Learn more</a>
+      </div>
+      <div class="blocks_item ctg1 component1">
+        <img src="/static/img/setup1.jpg">
+        <p>Redy solutions for gamers are waiting for you!</p>
+        <h2>59.99$</h2>
+        <a href="Setups.html">Learn more</a>
+      </div>
+      <div class="blocks_item ctg3 accessory1">
+        <img src="/static/img/setup1.jpg">
+        <p>Redy solutions for gamers are waiting for you!</p>
+        <h2>59.99$</h2>
+        <a href="Setups.html">Learn more</a>
+      </div>  
+    </div>
+  </div>
+
+  <div class="block">
+    <div class="blocks_row">
+      <div class="blocks_item ctg1 setup1">
+        <img src="/static/img/setup1.jpg">
+        <p>Redy solutions for gamers are waiting for you!</p>
+        <h2>59.99$</h2>
+        <a href="Setups.html">Learn more</a></div>
+      <div class="blocks_item ctg2 computer1">
+        <img src="/static/img/setup1.jpg">
+        <p>Redy solutions for gamers are waiting for you!</p>
+        <h2>59.99$</h2>
+        <a href="Setups.html">Learn more</a>
+      </div>
+      <div class="blocks_item ctg1 component1">
+        <img src="/static/img/setup1.jpg">
+        <p>Redy solutions for gamers are waiting for you!</p>
+        <h2>59.99$</h2>
+        <a href="Setups.html">Learn more</a>
+      </div>
+      <div class="blocks_item ctg3 accessory1">
+        <img src="/static/img/setup1.jpg">
+        <p>Redy solutions for gamers are waiting for you!</p>
+        <h2>59.99$</h2>
+        <a href="Setups.html">Learn more</a>
+      </div>  
+    </div>
+  </div>
+
+  <script src="/js/category.js"></script>
+  </div>
+-->
+  
+<script>
+  const productsList = document.getElementById("products-list");
+
+  fetch('https://fakestoreapi.com/products')
+    .then(response => response.json()) // Corrected typo: 'response' instead of 'resault'
+    .then(data => {
+      data.forEach(product => {
+        // Use template literals (backticks) for cleaner string interpolation
+        const productHTML = `
+          <div class="product" data-product-id="${product.id}">
+            <img class="product__img" src="${product.img}" alt="product image">
+            <h3 class="product__title">${product.title}</h3>
+            <p class="product_category">${product.category}</p>
+            <div class="footer">
+              <p class="footer__price">$${product.price.toFixed(2)}</p> // Format price with two decimal places
+              <button class="footer__button">Add to cart</button>
+            </div>
+          </div>
+        `;
+
+        productsList.insertAdjacentHTML("beforeend", productHTML);
+      });
+    })
+    .catch(error => {
+      console.error("Error fetching products:", error);
+      // Optionally display an error message to the user
+    });
+</script>
+
